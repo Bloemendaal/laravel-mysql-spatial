@@ -6,6 +6,11 @@ use Doctrine\DBAL\Types\Type as DoctrineType;
 use Grimzy\LaravelMysqlSpatial\Schema\Builder;
 use Grimzy\LaravelMysqlSpatial\Schema\Grammars\MySqlGrammar;
 use Illuminate\Database\MySqlConnection as IlluminateMySqlConnection;
+use Doctrine\DBAL\Types\Type as DoctrineType;
+use Grimzy\LaravelMysqlSpatial\Schema\Builder;
+use Grimzy\LaravelMysqlSpatial\Schema\Grammars\MySqlGrammar;
+use Illuminate\Database\MySqlConnection as IlluminateMySqlConnection;
+use Doctrine\DBAL\Connection as DoctrineConnection;
 
 class MysqlConnection extends IlluminateMySqlConnection
 {
