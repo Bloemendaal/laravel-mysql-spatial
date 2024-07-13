@@ -26,11 +26,40 @@ class MysqlConnection extends IlluminateMySqlConnection
                 'geometrycollection',
                 'geomcollection',
             ];
-            $dbPlatform = $this->getDoctrineSchemaManager()->getDatabasePlatform();
+            $dbPlatform = $this->getDoctrineConnection()->getDatabasePlatform();
             foreach ($geometries as $type) {
                 $dbPlatform->registerDoctrineTypeMapping($type, 'string');
             }
         }
+    }
+
+    protected function getDoctrineConnection(): DoctrineConnection
+    {
+        return $this->getDoctrineDriver()->connect($this->getDoctrineConfig());
+    }
+
+    protected function getDoctrineDriver(): \Doctrine\DBAL\Driver
+    {
+        $driverClass = $this->getDoctrineDriverClass();
+        return new $driverClass;
+    }
+
+    protected function getDoctrineDriverClass(): string
+    {
+        return \Doctrine\DBAL\Driver\PDOMySql\Driver::class;
+    }
+
+    protected function getDoctrineConfig(): array
+    {
+        return [
+            'pdo' => $this->getPdo(),
+            'dbname' => $this->getDatabaseName(),
+            'user' => $this->getConfig('username'),
+            'password' => $this->getConfig('password'),
+            'host' => $this->getConfig('host'),
+            'port' => $this->getConfig('port'),
+            'driver' => 'pdo_mysql',
+        ];
     }
 
     /**
