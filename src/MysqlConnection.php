@@ -2,7 +2,11 @@
 
 namespace Grimzy\LaravelMysqlSpatial;
 
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Types\Type as DoctrineType;
+use Doctrine\DBAL\Connection as DoctrineConnection;
+use Doctrine\DBAL\Driver\PDOMySql\Driver;
 use Grimzy\LaravelMysqlSpatial\Schema\Builder;
 use Grimzy\LaravelMysqlSpatial\Schema\Grammars\MySqlGrammar;
 use Illuminate\Database\MySqlConnection as IlluminateMySqlConnection;
@@ -26,11 +30,48 @@ class MysqlConnection extends IlluminateMySqlConnection
                 'geometrycollection',
                 'geomcollection',
             ];
-            $dbPlatform = $this->getDoctrineSchemaManager()->getDatabasePlatform();
+            $dbPlatform = $this->getDoctrineConnection()->getDatabasePlatform();
             foreach ($geometries as $type) {
                 $dbPlatform->registerDoctrineTypeMapping($type, 'string');
             }
         }
+    }
+
+    protected function getDoctrineConnection(): DoctrineConnection
+    {
+        return DriverManager::getConnection([
+            'pdo' => $this->getPdo(),
+            'dbname' => $this->getConfig('database'),
+            'user' => $this->getConfig('username'),
+            'password' => $this->getConfig('password'),
+            'host' => $this->getConfig('host'),
+            'port' => $this->getConfig('port'),
+            'driver' => 'pdo_mysql',
+        ], new Configuration());
+    }
+
+    protected function getDoctrineDriver(): \Doctrine\DBAL\Driver
+    {
+        $driverClass = $this->getDoctrineDriverClass();
+        return new $driverClass;
+    }
+
+    protected function getDoctrineDriverClass(): string
+    {
+        return Driver::class;
+    }
+
+    protected function getDoctrineConfig(): array
+    {
+        return [
+            'pdo' => $this->getPdo(),
+            'dbname' => $this->getDatabaseName(),
+            'user' => $this->getConfig('username'),
+            'password' => $this->getConfig('password'),
+            'host' => $this->getConfig('host'),
+            'port' => $this->getConfig('port'),
+            'driver' => 'pdo_mysql',
+        ];
     }
 
     /**

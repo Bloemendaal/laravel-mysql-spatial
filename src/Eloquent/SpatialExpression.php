@@ -9,7 +9,7 @@ class SpatialExpression extends Expression
     #[\ReturnTypeWillChange]
     public function getValue($grammar)
     {
-        return "ST_GeomFromText(?, ?, 'axis-order=long-lat')";
+        return "ST_GeomFromText(?, ?)";
     }
 
     public function getSpatialValue()
